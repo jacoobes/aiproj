@@ -1,13 +1,15 @@
 from flask import Flask, render_template, redirect, url_for, session
 from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'key'  # Change this to a secure secret key
-app.config['DISCORD_CLIENT_ID'] = '1209527299024625726'
-app.config['DISCORD_CLIENT_SECRET'] = 'nRlamvFUA1SevXiI5dJ4TB6wbjv3vLTx'
-app.config['DISCORD_REDIRECT_URI'] = 'http://localhost:5000/callback'  # Update with your redirect URI
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+app.config['DISCORD_CLIENT_ID'] = os.getenv('DISCORD_CLIENT_ID')
+app.config['DISCORD_CLIENT_SECRET'] = os.getenv('DISCORD_CLIENT_SECRET')
+app.config['DISCORD_REDIRECT_URI'] = 'http://127.0.0.1:5000/callback'  # Update with your redirect URI
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
 discord = DiscordOAuth2Session(app)
 
 @app.route('/')
