@@ -3,16 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+    <title>{{ user.name }}'s Embedder</title>
+    <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
 </head>
 <body>
-    <h1>Welcome to your Flask app with Discord OAuth2!</h1>
-    {% if session.discord_user %}
-        <p>Logged in as: {{ session.discord_user['username'] }}</p>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-        <a href="{{ url_for('login') }}">Login with Discord</a>
-    {% endif %}
+
+<style>
+input{
+    border: none;
+    padding: 10px;
+    margin: 10px;
+    height: 20px;
+    width: 90%;
+    border:1px solid #eaeaea;
+    outline:none;
+}
+input:hover{
+    border-color: #a0a0a0 #b9b9b9 #b9b9b9 #b9b9b9;
+}
+input:focus{
+    border-color:#4d90fe;
+}
+
+input[type="submit"] {
+    border-radius: 2px;
+    background: #f2f2f2;
+    border: 1px solid #f2f2f2;
+    color: #757575;
+    cursor: default;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100px;
+    padding: 0 16px;
+    height:36px;
+}
+input[type="submit"]:hover {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    background: #f8f8f8;
+    border: 1px solid #c6c6c6;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    color: #222;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px; /* Adjust the width as needed */
+}
+
+.content {
+    flex: 1;
+    margin-left: 20px; /* Adjust margin as needed */
+}
+
+
+.sidebar img {
+    width: 35%; /* Scale down the width to 50% */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Ensure proper display */
+    margin-bottom: 5px; /* Add some space between images */
+}
+</style>
+
+<h1>htmx Search Bar Example</h1>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            {% for guild in guilds %}
+                <img src="{{ guild.icon_url }}" alt="{{ guild.name }}">
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="content">
+        <form hx-post="/search" hx-target="#search-result">
+            <input type="text" name="search_term" placeholder="Enter search term...">
+            <input type="submit" value="Go">
+        </form>
+    <div id="search-result"></div>
+</div>
+<div id="search-result"></div>
+
+</div>
+
 </body>
 </html>
 

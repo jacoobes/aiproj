@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session, request
 from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
 from dotenv import load_dotenv
 import os
@@ -31,21 +31,19 @@ def callback():
 def redirect_unauthorized(e):
     return redirect(url_for("login"))
 
-	
+
+@app.route('/search', methods=['POST'])
+@requires_authorization
+def search():
+    search_term = request.form['search_term']
+    return "Search Term: " + search_term
+
 @app.route("/me/")
 @requires_authorization
 def me():
     user = discord.fetch_user()
-    return f"""
-    <html>
-        <head>
-            <title>{user.name}</title>
-        </head>
-        <body>
-            <img src='{user.avatar_url}' />
-        </body>
-    </html>"""
-
+    guilds = discord.fetch_guilds()
+    return render_template("app.html", user=user, guilds=guilds)
 
 if __name__ == "__main__":
     app.run(debug=True)
