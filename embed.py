@@ -2,7 +2,7 @@ import faiss
 
 dimension = 64
 
-index = faiss.IndexFlatL2(d)
+index = faiss.IndexFlatL2(dimension)
 
 def add(data):
     return index.add(data)
