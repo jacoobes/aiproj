@@ -28,10 +28,24 @@ CREATE TABLE IF NOT EXISTS users (
 );
 '''
 
+
+def create_folder_if_not_exists(folder_path):
+    """
+    Create a folder if it doesn't exist.
+
+    Parameters:
+        folder_path (str): Path of the folder to create.
+    """
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Folder '{folder_path}' created.")
+    else:
+        print(f"Folder '{folder_path}' already exists.")
+
+create_folder_if_not_exists("indexes")
 cursor.execute(create_users_table_sql)
 cursor.execute(create_table_sql)
 conn.commit()
-
 
 def insert_guild_user(guild_id, user_id):
     insert_sql = '''
@@ -50,23 +64,44 @@ def get_user_id(guild_id):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html', discord=discord)
 
 @app.route("/login/")
 def login():
     return discord.create_session()
-	
+
+@app.route("/logout/")
+def logout():
+    discord.revoke()
+    return redirect(url_for(".home"))
 
 @app.route("/callback/")
 def callback():
     discord.callback()
     return redirect(url_for(".me"))
 
-
 @app.errorhandler(Unauthorized)
 def redirect_unauthorized(e):
     return redirect(url_for("login"))
 
+@app.route("/guildselect", methods=["POST"])
+@requires_authorization
+def guildselect():
+    gid = str(request.form['guilds'])
+    found = None
+    for g in discord.fetch_guilds():
+        if str(g.id) == gid:
+            found = g
+
+    if not found:
+        return """<h2 class="selected-guild">Unknown Guild</h2>"""
+    print(discord.request("/channels/640980255267356722/messages"))
+    index_found = os.path.exists("indexes/"+gid+".db")
+    html_body = "<p>Index found.</p>" if index_found else '<input type="submit" value="Index">'
+    return f"""
+        <h2 class="selected-guild">{found.name}</h2>
+        {html_body}
+    """
 
 @app.route('/search', methods=['POST'])
 @requires_authorization
@@ -79,10 +114,14 @@ def search():
 def me():
     user = discord.fetch_user()
     guilds = discord.fetch_guilds()
-    for guild in guilds:
-        print(guild.id)
 
     return render_template("app.html", user=user, guilds=guilds)
+
+#@app.route("/index/<name>")
+#@requires_authorization
+#def index(name=None):
+#    
+#    pass
 
 if __name__ == "__main__":
     app.run(debug=True)

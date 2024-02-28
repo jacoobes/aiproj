@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>htmx with Discord OAuth2</title>
+    <title>Embedcord</title>
 </head>
 <body>
-    <h1>Welcome to your Flask app with Discord OAuth2!</h1>
-    {% if session.discord_user %}
-        <p>Logged in as: {{ session.discord_user['username'] }}</p>
+    <h1>Welcome to EmbedCord</h1>
+    {% if discord.user_id %}
+        <p>Logged in as: {{ discord.fetch_user().username }}</p>
         <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
         <a href="{{ url_for('login') }}">Login with Discord</a>

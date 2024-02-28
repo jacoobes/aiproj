@@ -64,23 +64,29 @@ input[type="submit"]:hover {
     height: auto; /* Maintain aspect ratio */
     display: block; /* Ensure proper display */
     margin-bottom: 5px; /* Add some space between images */
+    cursor: pointer;
 }
 </style>
 
-<h1>htmx Search Bar Example</h1>
+<h1>App</h1>
 <div class="container">
     <div class="sidebar">
-        <ul>
-            {% for guild in guilds %}
-                <img src="{{ guild.icon_url }}" alt="{{ guild.name }}">
-            {% endfor %}
-        </ul>
+        <form hx-post="/guildselect" hx-target=".selected-guild">
+            <label for="guild">Guild</label>
+            <select id="guild" name="guilds">
+                {% for guild in guilds %}
+                <option value="{{ guild.id }}">{{ guild.name }}</option>
+                {% endfor %}
+            </select> 
+            <button type="submit" >Select!</button>
+        </form>
     </div>
     <div class="content">
-        <form hx-post="/search" hx-target="#search-result">
+        <div class="selected-guild"></div>
+        <!-- <form hx-post="/search" hx-target="#search-result">
             <input type="text" name="search_term" placeholder="Enter search term...">
             <input type="submit" value="Go">
-        </form>
+        </form> -->
     <div id="search-result"></div>
 </div>
 <div id="search-result"></div>
@@ -88,5 +94,12 @@ input[type="submit"]:hover {
 </div>
 
 </body>
+<script>
+
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+</script>
 </html>
 
