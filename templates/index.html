@@ -7,12 +7,7 @@
 </head>
 <body>
     <h1>Welcome to EmbedCord</h1>
-    {% if discord.user_id %}
-        <p>Logged in as: {{ discord.fetch_user().username }}</p>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-        <a href="{{ url_for('login') }}">Login with Discord</a>
-    {% endif %}
+    <a href="{{ url_for('login') }}">Login with Discord</a>
 </body>
 </html>
 

@@ -69,6 +69,7 @@ input[type="submit"]:hover {
 </style>
 
 <h1>App</h1>
+<button hx-get="/logout">Logout</button>
 <div class="container">
     <div class="sidebar">
         <form hx-post="/guildselect" hx-target=".selected-guild">
@@ -87,7 +88,7 @@ input[type="submit"]:hover {
             <input type="text" name="search_term" placeholder="Enter search term...">
             <input type="submit" value="Go">
         </form> -->
-    <div id="search-result"></div>
+        <div id="search-result"></div>
 </div>
 <div id="search-result"></div>
 

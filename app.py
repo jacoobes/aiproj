@@ -1,8 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, session, request
+from flask import Flask, render_template, redirect, url_for, session, request, Response, make_response
 from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
 from dotenv import load_dotenv
 import sqlite3
+
 import os
+import subprocess
 
 load_dotenv()
 app = Flask(__name__)
@@ -12,8 +14,8 @@ app.config['DISCORD_CLIENT_SECRET'] = os.getenv('DISCORD_CLIENT_SECRET')
 app.config['DISCORD_REDIRECT_URI'] = 'http://127.0.0.1:5000/callback'  # Update with your redirect URI
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
 discord = DiscordOAuth2Session(app)
-conn = sqlite3.connect('users.db')
-cursor = conn.cursor()
+# conn = sqlite3.connect('users.db')
+# cursor = conn.cursor()
 
 create_table_sql = '''
 CREATE TABLE IF NOT EXISTS guilds (
@@ -28,6 +30,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 '''
 
+bot_started = False
+pro = -1
 
 def create_folder_if_not_exists(folder_path):
     """
@@ -43,9 +47,9 @@ def create_folder_if_not_exists(folder_path):
         print(f"Folder '{folder_path}' already exists.")
 
 create_folder_if_not_exists("indexes")
-cursor.execute(create_users_table_sql)
-cursor.execute(create_table_sql)
-conn.commit()
+# cursor.execute(create_users_table_sql)
+# cursor.execute(create_table_sql)
+# conn.commit()
 
 def insert_guild_user(guild_id, user_id):
     insert_sql = '''
@@ -64,16 +68,22 @@ def get_user_id(guild_id):
 
 @app.route('/')
 def home():
-    return render_template('index.html', discord=discord)
+    if discord.user_id:
+        return redirect(url_for('.me'))
+    return render_template('index.html')
 
 @app.route("/login/")
 def login():
-    return discord.create_session()
+    return discord.create_session(scopes=["identify", "email", "guilds", "guilds.join", "bot", "application.commands"])
 
 @app.route("/logout/")
 def logout():
+    global pro
     discord.revoke()
-    return redirect(url_for(".home"))
+    pro.send_signal(signal.CTRL_C_EVENT)
+    response = Response()
+    response.headers["hx-redirect"] = url_for(".home")
+    return response
 
 @app.route("/callback/")
 def callback():
@@ -95,9 +105,9 @@ def guildselect():
 
     if not found:
         return """<h2 class="selected-guild">Unknown Guild</h2>"""
-    print(discord.request("/channels/640980255267356722/messages"))
+    url=f"https://discord.com/oauth2/authorize?client_id=1209527299024625726&permissions=8&scope=bot+applications.commands&guild_id={gid}"
     index_found = os.path.exists("indexes/"+gid+".db")
-    html_body = "<p>Index found.</p>" if index_found else '<input type="submit" value="Index">'
+    html_body = "<p>Index found.</p>" if index_found else f'<a href="{url}">Invite</a>'
     return f"""
         <h2 class="selected-guild">{found.name}</h2>
         {html_body}
@@ -112,18 +122,20 @@ def search():
 @app.route("/me/")
 @requires_authorization
 def me():
+    global bot_started
+    global pro
     user = discord.fetch_user()
     guilds = discord.fetch_guilds()
+    if not bot_started: 
+        pro = subprocess.Popen(["npm", "start"], cwd=".\\scraper\\", shell=True)
+        bot_started = True
+    return render_template("app.html", 
+                           user=user,
+                           guilds=guilds)
 
-    return render_template("app.html", user=user, guilds=guilds)
-
-#@app.route("/index/<name>")
-#@requires_authorization
-#def index(name=None):
-#    
-#    pass
+    return make_response('', 304)
 
 if __name__ == "__main__":
     app.run(debug=True)
-    cursor.close()
-    conn.close()
+    # cursor.close()
+    # conn.close()
