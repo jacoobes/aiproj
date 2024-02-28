@@ -74,13 +74,11 @@ def home():
 
 @app.route("/login/")
 def login():
-    return discord.create_session(scopes=["identify", "email", "guilds", "guilds.join", "bot", "application.commands"])
+    return discord.create_session(scope=["identify", "email", "guilds", "guilds.join", "messages.read"])
 
 @app.route("/logout/")
 def logout():
-    global pro
     discord.revoke()
-    pro.send_signal(signal.CTRL_C_EVENT)
     response = Response()
     response.headers["hx-redirect"] = url_for(".home")
     return response
@@ -126,14 +124,15 @@ def me():
     global pro
     user = discord.fetch_user()
     guilds = discord.fetch_guilds()
-    if not bot_started: 
-        pro = subprocess.Popen(["npm", "start"], cwd=".\\scraper\\", shell=True)
-        bot_started = True
+    try:
+        channels = discord.request("/channels/640980255267356722/messages", method="GET");
+        print(channels)
+    except Unauthorized:
+        print("unauth")
     return render_template("app.html", 
                            user=user,
                            guilds=guilds)
 
-    return make_response('', 304)
 
 if __name__ == "__main__":
     app.run(debug=True)
