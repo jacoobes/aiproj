@@ -105,7 +105,13 @@ def guildselect():
         return """<h2 class="selected-guild">Unknown Guild</h2>"""
     url=f"https://discord.com/oauth2/authorize?client_id=1209527299024625726&permissions=8&scope=bot+applications.commands&guild_id={gid}"
     index_found = os.path.exists("indexes/"+gid+".db")
-    html_body = "<p>Index found.</p>" if index_found else f'<a href="{url}">Invite</a>'
+    html_body = "<p>Index found.</p>" if index_found else f"""<div>
+                                                                <a href="{url}">Invite</a>
+                                                                <form action="/upload-index">
+                                                                      <input type="file" id="myFile" name="filename">
+                                                                      <input type="submit">
+                                                                </form>
+                                                              </div>"""
     return f"""
         <h2 class="selected-guild">{found.name}</h2>
         {html_body}
@@ -124,11 +130,6 @@ def me():
     global pro
     user = discord.fetch_user()
     guilds = discord.fetch_guilds()
-    try:
-        channels = discord.request("/channels/640980255267356722/messages", method="GET");
-        print(channels)
-    except Unauthorized:
-        print("unauth")
     return render_template("app.html", 
                            user=user,
                            guilds=guilds)
