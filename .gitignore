@@ -2,3 +2,4 @@
 scraper/node_modules
 scraper/dist
 users.db
+scraper/.sern/
