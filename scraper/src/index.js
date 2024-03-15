@@ -3,7 +3,8 @@ import { config } from 'dotenv'
 config({ path: "../.env" })
 import { Client, GatewayIntentBits } from 'discord.js';
 import { Sern, single, makeDependencies } from '@sern/handler';
-
+import { Embedder } from './services/embedder.js';
+import { loadModel } from 'gpt4all'
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -21,6 +22,7 @@ const client = new Client({
  */
 await makeDependencies(({ add }) => {
     add('@sern/client', single(() => client));
+    add('embed', new Embedder())
 });
 
 //View docs for all options

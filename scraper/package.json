@@ -5,18 +5,19 @@
 	"description": "",
 	"main": "src/index.js",
 	"scripts": {
-            "start": "sern build && node .",
-            "commands:publish": "sern commands publish"
+		"start": "sern build && node .",
+		"commands:publish": "sern commands publish"
 	},
 	"keywords": [
-            "javascript",
-            "sern",
-            "discord.js"
+		"javascript",
+		"sern",
+		"discord.js"
 	],
 	"dependencies": {
 		"@sern/handler": "^3.3.3",
 		"discord.js": "latest",
-		"dotenv": "^16.3.1"
+		"dotenv": "^16.3.1",
+		"gpt4all": "^3.1.0"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.25"
