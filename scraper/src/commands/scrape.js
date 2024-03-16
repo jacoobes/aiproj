@@ -2,7 +2,8 @@ import { commandModule, CommandType, Service } from '@sern/handler'
 import { mkdirSync, writeFileSync } from 'fs'
 import { requirePermission } from '../plugins/requirePermission.js'
 import { PermissionsBitField } from 'discord.js'
-const logger = Service('@sern/logger')
+
+const logger = Service('@sern/logger');
 
 export default commandModule({
     type: CommandType.Text,
@@ -20,8 +21,7 @@ export default commandModule({
         let allMessages = [];
         //Iterate over all text channels
         for (const channel of textChannels.values()) {
-            if (!channel.permissionsFor(message.client.user).has('VIEW_CHANNEL')) {
-                console.log(`Bot does not have permissions to view channel ${channel.name}`);
+            if (!channel.permissionsFor(message.client.user).has(PermissionsBitField.Flags.ViewChannel)) {
                 continue; //move on to next channel
             }
             const messages = await channel?.messages.fetch(); //Adjustable limit

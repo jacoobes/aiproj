@@ -4,7 +4,6 @@ config({ path: "../.env" })
 import { Client, GatewayIntentBits } from 'discord.js';
 import { Sern, single, makeDependencies } from '@sern/handler';
 import { Embedder } from './services/embedder.js';
-import { loadModel } from 'gpt4all'
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,

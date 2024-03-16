@@ -6,7 +6,7 @@ export class Embedder {
      */
     __embedder;
     async init() {
-       this.__embedder = await loadModel('all-MiniLM-L6-v2-f16.gguf', { type: 'embedding', device: 'gpu'})
+       this.__embedder = await loadModel('all-MiniLM-L6-v2-f16.gguf', { type: 'embedding' })
     }
 
 
