@@ -19,6 +19,7 @@
 		"discord.js": "latest",
 		"dotenv": "^16.3.1",
 		"gpt4all": "^4.0.0",
+		"kysely": "^0.27.3",
 		"sqlite-vss": "^0.1.2"
 	},
 	"devDependencies": {
