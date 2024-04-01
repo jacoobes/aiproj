@@ -15,9 +15,11 @@
 	],
 	"dependencies": {
 		"@sern/handler": "^3.3.3",
+		"better-sqlite3": "^9.4.3",
 		"discord.js": "latest",
 		"dotenv": "^16.3.1",
-		"gpt4all": "^3.1.0"
+		"gpt4all": "^4.0.0",
+		"sqlite-vss": "^0.1.2"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.25"
