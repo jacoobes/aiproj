@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { readdirSync } from "node:fs";
 import path from 'node:path'
-
+import { Kysely, SqliteDialect } from 'kysely'
 
 
 export class IndexBase {
@@ -13,7 +13,8 @@ export class IndexBase {
         dirents.forEach((ent) => {
             const fullpath = path.join(this.dir, ent.name);
             const name = ent.name.substring(0, ent.name.indexOf('.'));
-            !ent.isDirectory() && this.loaded_database.set(name, new Database(fullpath));
+            const database = new SqliteDialect( { database: new Database(fullpath) });
+            !ent.isDirectory() && this.loaded_database.set(name, new Kysely({ dialect: database }));
         })
     }
 
@@ -22,8 +23,9 @@ export class IndexBase {
             return this.loaded_database.get(guildId);
         }
         const newpath = path.join(this.dir, String(guildId));
-        const db = new Database(newpath);
-        this.loaded_database.set(guildId,db); 
+        const driver = new SqliteDialect({ database: new Database(newpath) });
+        const db = new Kysely({ dialect: driver });
+        this.loaded_database.set(guildId, db); 
         return db;
     }
 }
