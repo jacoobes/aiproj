@@ -3,3 +3,5 @@ scraper/node_modules
 scraper/dist
 users.db
 scraper/.sern/
+scraper/guilddata/*.txt
+scraper/indexes/*.db
