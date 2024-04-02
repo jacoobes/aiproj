@@ -45,7 +45,7 @@ export class IndexBase {
             const dialect = new SqliteDialect( { database: create_database(fullpath) });
             const db = new Kysely({ dialect });
             await createschemas(db);
-            !ent.isDirectory() && this.loaded_database.set(name, db );
+            !ent.isDirectory() && this.loaded_database.set(name, db);
         }
     }
 

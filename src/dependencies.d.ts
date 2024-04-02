@@ -6,14 +6,15 @@
 
 import type { Logging, CoreDependencies, Singleton } from '@sern/handler'
 import type { Client } from 'discord.js'
-
+import type { IndexBase } from './services/indexbase.js';
 /**
  * Note: You usually would not need to modify this unless there is an urgent need to break the contracts provided.
  * You would need to modify this to add your custom Services, however.
  */
 declare global {
    interface Dependencies extends CoreDependencies {
-        '@sern/client': Singleton<Client>
+        '@sern/client': Singleton<Client>;
+        'index': Singleton<IndexBase>
    }
 }
 
