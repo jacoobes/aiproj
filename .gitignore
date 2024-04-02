@@ -1,4 +1,7 @@
 .env
-scraper/node_modules
-scraper/dist
+node_modules
+dist
 users.db
+.sern/
+guilddata/*.txt
+indexes/*.db
