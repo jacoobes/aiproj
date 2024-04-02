@@ -1,6 +1,5 @@
 /// <reference path="dependencies.d.ts" />
-import { config } from 'dotenv'
-config({ path: "../.env" })
+import 'dotenv/config'
 import { Client, GatewayIntentBits } from 'discord.js';
 import { Sern, single, makeDependencies } from '@sern/handler';
 import { Embedder } from './services/embedder.js';

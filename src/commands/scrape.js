@@ -3,7 +3,6 @@ import { mkdirSync, writeFileSync } from 'fs'
 import { requirePermission } from '../plugins/requirePermission.js'
 import { PermissionsBitField } from 'discord.js'
 
-const logger = Service('@sern/logger');
 
 export default commandModule({
     type: CommandType.Text,
@@ -12,6 +11,7 @@ export default commandModule({
     ],
     execute: async (ctx) => {
         const message = ctx.message;
+        const logger = Service('@sern/logger');
         const textChannels = await message
             .guild
             .channels
