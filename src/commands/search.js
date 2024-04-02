@@ -1,4 +1,4 @@
-import { commandModule, CommandType, Service } from '@sern/handler'
+import { commandModule, CommandType, Services, Service } from '@sern/handler'
 import { ApplicationCommandOptionType } from 'discord.js';
 
 
@@ -6,7 +6,6 @@ export default commandModule({
     type: CommandType.Slash,
     description: "Search one of the indexed guilds",
     options: [
-
         {
             type: ApplicationCommandOptionType.String,
             name: "guild",
@@ -25,13 +24,13 @@ export default commandModule({
         }
     ],
     execute: async (ctx) => {
-        const indexer = Service('index');
+        const [indexer, embedder] = Services('index', 'embed');
         const gid = ctx.options.getString('guild', true);
+
         /**
          * @type {import('kysely').Kysely}
          */
-        const guildindex  = indexer.create(gid);
+        const guildindex  = await indexer.create(gid);
         
-
     }
 })

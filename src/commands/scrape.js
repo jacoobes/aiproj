@@ -5,7 +5,8 @@ import { PermissionsBitField } from 'discord.js'
 
 
 export default commandModule({
-    type: CommandType.Text,
+    type: CommandType.Both,
+    description: "Scrape this server of its text messages",
     plugins: [
         requirePermission('bot', [PermissionsBitField.Flags.ViewChannel], 'Bot does not have permissions in this server'  )
     ],

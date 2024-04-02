@@ -8,11 +8,17 @@ export class Embedder {
      * @type {import('gpt4all').EmbeddingModel}
      */
     __embedder;
+
     async init() {
         this.__embedder = await loadModel('nomic-embed-text-v1.5.f16.gguf', { type: 'embedding', device: 'gpu' });
     }
 
     embed(text, options) {
-        return createEmbedding(this.__embedder, text, { ...options, ...this.default_options });
+        return createEmbedding(this.__embedder,
+            text, { ...options, ...this.default_options });
+    }
+
+    dispose() {
+        this.__embedder.dispose();
     }
 }

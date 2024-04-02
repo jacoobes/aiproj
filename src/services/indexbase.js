@@ -11,16 +11,6 @@ import * as sqlite_vss from "sqlite-vss";
  * @param {string} guildId
  */
 const createschemas = async (db, guildId) => {
-        await db.schema
-          .createTable('guild').ifNotExists()
-          .addColumn('id', 'text', (col) => col.primaryKey())
-          .addColumn('name', 'text', (col) => col.notNull())
-          .execute()
-        await db.schema
-          .createTable('user').ifNotExists()
-          .addColumn('id', 'text', (col) => col.primaryKey())
-          .addColumn('name', 'text', (col) => col.notNull())
-          .execute()
         await db.schema.createTable('message').ifNotExists()
           .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
           .addColumn('guild_id', 'text', (col) => col.notNull())
@@ -28,10 +18,9 @@ const createschemas = async (db, guildId) => {
           .addColumn('content', 'text', (col) => col.notNull())
           .addColumn('content_embeddings', 'blob', col => col.notNull())
           .addColumn('timestamp', 'text', (col) => col.notNull())
-          .addForeignKeyConstraint('guild_id', (fk) => fk.references('guild', 'id'))
-          .addForeignKeyConstraint('author_id', (fk) => fk.references('user', 'id'))
           .execute()
-        db.insertInto('message').values('id', 'guild_id', 'author_id', 'content', 'content_embeddings', 'timestamp'); 
+        
+        //db.insertInto('message').values(); 
 }
 const create_database = (path) => {
     const db = new Database(path);
@@ -67,6 +56,7 @@ export class IndexBase {
         const db = new Kysely({ dialect: driver });
         await createschemas(db, guildId);
         this.loaded_database.set(guildId, db); 
+
         return db;
     }
 }
