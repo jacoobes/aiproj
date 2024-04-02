@@ -41,7 +41,7 @@ export default commandModule({
                     } else {
                         done = true;
                     }
-                } while (!done && messageFetched < 3000); //Until it hits 3000
+                } while (!done || messageFetched > 3000); //Until it hits 3000
         }
         const textContent = allMessages.join('\n');
         const dir = `guilddata/`
