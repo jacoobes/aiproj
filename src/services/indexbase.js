@@ -1,33 +1,42 @@
 import Database from "better-sqlite3";
 import { readdirSync } from "node:fs";
 import path from 'node:path'
+import * as sqlite_lines from "sqlite-lines";
 import { Kysely, SqliteDialect } from 'kysely'
 import * as sqlite_vss from "sqlite-vss";
-const createschemas = async (db) => {
-            await db.schema
-              .createTable('guild').ifNotExists()
-              .addColumn('id', 'text', (col) => col.primaryKey())
-              .addColumn('name', 'text', (col) => col.notNull())
-              .execute()
-            await db.schema
-              .createTable('user').ifNotExists()
-              .addColumn('id', 'text', (col) => col.primaryKey())
-              .addColumn('name', 'text', (col) => col.notNull())
-              .execute()
-            await db.schema.createTable('message').ifNotExists()
-              .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
-              .addColumn('guild_id', 'text', (col) => col.notNull())
-              .addColumn('author_id', 'text', (col) => col.notNull())
-              .addColumn('content', 'text', (col) => col.notNull())
-              .addColumn('content_embeddings', 'blob', col => col.notNull())
-              .addColumn('timestamp', 'text', (col) => col.notNull())
-              .addForeignKeyConstraint('guild_id', (fk) => fk.references('guild', 'id'))
-              .addForeignKeyConstraint('author_id', (fk) => fk.references('user', 'id'))
-              .execute()
+
+
+/**
+ * @param {Kysely} db
+ * @param {string} guildId
+ */
+const createschemas = async (db, guildId) => {
+        await db.schema
+          .createTable('guild').ifNotExists()
+          .addColumn('id', 'text', (col) => col.primaryKey())
+          .addColumn('name', 'text', (col) => col.notNull())
+          .execute()
+        await db.schema
+          .createTable('user').ifNotExists()
+          .addColumn('id', 'text', (col) => col.primaryKey())
+          .addColumn('name', 'text', (col) => col.notNull())
+          .execute()
+        await db.schema.createTable('message').ifNotExists()
+          .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
+          .addColumn('guild_id', 'text', (col) => col.notNull())
+          .addColumn('author_id', 'text', (col) => col.notNull())
+          .addColumn('content', 'text', (col) => col.notNull())
+          .addColumn('content_embeddings', 'blob', col => col.notNull())
+          .addColumn('timestamp', 'text', (col) => col.notNull())
+          .addForeignKeyConstraint('guild_id', (fk) => fk.references('guild', 'id'))
+          .addForeignKeyConstraint('author_id', (fk) => fk.references('user', 'id'))
+          .execute()
+        db.insertInto('message').values('id', 'guild_id', 'author_id', 'content', 'content_embeddings', 'timestamp'); 
 }
 const create_database = (path) => {
     const db = new Database(path);
     sqlite_vss.load(db);
+    db.loadExtension(sqlite_lines.getLoadablePath());
     return db;
 }
 
@@ -56,7 +65,7 @@ export class IndexBase {
         const newpath = path.join(this.dir, String(guildId));
         const driver = new SqliteDialect({ database: create_database(newpath) });
         const db = new Kysely({ dialect: driver });
-        await createschemas(db);
+        await createschemas(db, guildId);
         this.loaded_database.set(guildId, db); 
         return db;
     }

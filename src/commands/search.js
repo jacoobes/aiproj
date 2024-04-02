@@ -27,7 +27,11 @@ export default commandModule({
     execute: async (ctx) => {
         const indexer = Service('index');
         const gid = ctx.options.getString('guild', true);
-        await ctx.reply("Selected " + gid);
-       
+        /**
+         * @type {import('kysely').Kysely}
+         */
+        const guildindex  = indexer.create(gid);
+        
+
     }
 })
