@@ -30,7 +30,7 @@ export default commandModule({
             });
 
             const textContent = allMessages.join('');
-            const dir = `dataset/${message.guild.id}/`
+            const dir = `guilddata/`
             mkdirSync(dir, { recursive: true });
             writeFileSync(dir+`${message.guild.id}_chat_history.txt`, textContent, { encoding: 'utf8' });
             logger.info({ message: `Saved to ${message.guild.id}_chat_history.txt` });

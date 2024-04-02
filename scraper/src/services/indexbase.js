@@ -34,7 +34,8 @@ const create_database = (path) => {
 export class IndexBase {
     loaded_database = new Map();    
     dir = path.resolve("indexes");
-
+    
+    //We only make a one level layer deep database entry listing
     async init() {
         const dirents = readdirSync(this.dir, { withFileTypes: true });
         for(const ent of dirents) {
