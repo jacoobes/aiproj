@@ -24,7 +24,7 @@ export default commandModule({
         }
     ],
     execute: async (ctx) => {
-        const [indexer, embedder] = Services('index', 'embed');
+        const indexer = Service('index');
         const gid = ctx.options.getString('guild', true);
 
         /**

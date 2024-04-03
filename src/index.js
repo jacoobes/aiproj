@@ -2,7 +2,6 @@
 import 'dotenv/config'
 import { Client, GatewayIntentBits } from 'discord.js';
 import { Sern, single, makeDependencies } from '@sern/handler';
-import { Embedder } from './services/embedder.js';
 import { IndexBase } from './services/indexbase.js';
 const client = new Client({
 	intents: [
@@ -21,7 +20,6 @@ const client = new Client({
  */
 await makeDependencies(({ add }) => {
     add('@sern/client', single(() => client));
-    add('embed', new Embedder())
     add('index', new IndexBase())
 });
 

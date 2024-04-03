@@ -11,9 +11,8 @@ export default commandModule({
         requirePermission('bot', [PermissionsBitField.Flags.ViewChannel], 'Bot does not have permissions in this server'  )
     ],
     execute: async (ctx) => {
-        const message = ctx.message;
         const logger = Service('@sern/logger');
-        const textChannels = await message
+        const textChannels = await ctx
             .guild
             .channels
             .fetch()
@@ -22,7 +21,7 @@ export default commandModule({
         let allMessages = [];
         //Iterate over all text channels
         for (const channel of textChannels.values()) {
-                if (!channel.permissionsFor(message.client.user).has(PermissionsBitField.Flags.ViewChannel)) {
+                if (!channel.permissionsFor(ctx.client.user).has(PermissionsBitField.Flags.ViewChannel)) {
                     console.log(`Bot does not have permissions to view channel ${channel.name}`);
                     continue; //move on to next channel
                 }
@@ -47,8 +46,8 @@ export default commandModule({
         const textContent = allMessages.join('\n');
         const dir = `guilddata/`
         mkdirSync(dir, { recursive: true });
-        writeFileSync(dir+`${message.guild.id}_chat_history.txt`, textContent, { encoding: 'utf8' });
-        logger.info({ message: `Saved to ${message.guild.id}_chat_history.txt` });
+        writeFileSync(dir+`${ctx.guild.id}_chat_history.txt`, textContent, { encoding: 'utf8' });
+        logger.info({ message: `Saved to ${ctx.guild.id}_chat_history.txt` });
     }
 })
 
