@@ -5,10 +5,10 @@ import { Kysely, SqliteDialect } from 'kysely'
 import readline from 'readline/promises'
 import { on } from "node:events";
 import { loadModel, createEmbedding } from 'gpt4all'
-
+import { load } from 'sqlite-vss'
 const create_database = (path) => {
     const db = new Database(path+".db");
-    //sqlite_vss.load(db);
+    load(db);
     return db;
 }
 
@@ -26,9 +26,12 @@ export class IndexBase {
             if(ent.name == "placeholder") continue;
             const fullpath = path.join(this.dir, ent.name);
             const name = ent.name.substring(0, ent.name.indexOf('.'));
+            if(existsSync(fullpath)) {
+                continue;
+            }
             const dialect = new SqliteDialect( { database: create_database(fullpath) });
             const db = new Kysely({ dialect });
-            await createschemas(db);
+            await this.createschemas(db);
             !ent.isDirectory() && this.loaded_database.set(name, db);
         }
 
@@ -53,8 +56,8 @@ export class IndexBase {
         });
         const lines = on(rl, "line");
         for await (const line of lines){
-            //const content = line[0];
-            //console.log(createEmbedding(this._embedder, content))
+            const content = line[0];
+            console.log(createEmbedding(this._embedder, content))
         }
     }
 

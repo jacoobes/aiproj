@@ -14,17 +14,16 @@
 		"discord.js"
 	],
 	"dependencies": {
-		"@sern/handler": "^3.3.3",
-		"better-sqlite3": "^9.4.3",
-		"discord.js": "latest",
-		"dotenv": "^16.3.1",
-		"gpt4all": "^4.0.0",
-		"kysely": "^0.27.3",
-		"sqlite-lines": "^0.2.2",
-		"sqlite-vss": "^0.1.2"
+            "@sern/handler": "^3.3.3",
+            "better-sqlite3": "^9.4.3",
+            "discord.js": "latest",
+            "dotenv": "^16.3.1",
+            "gpt4all": "^4.0.0",
+            "kysely": "^0.27.3",
+            "sqlite-vss": "^0.1.2"
 	},
 	"devDependencies": {
-		"@types/node": "^18.0.25"
+	    "@types/node": "^18.0.25"
 	},
 	"type": "module"
 }

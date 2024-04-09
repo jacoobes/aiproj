@@ -27,9 +27,6 @@ export default commandModule({
         const indexer = Service('index');
         const gid = ctx.options.getString('guild', true);
 
-        /**
-         * @type {import('kysely').Kysely}
-         */
         const guildindex  = await indexer.create(gid);
         
     }
