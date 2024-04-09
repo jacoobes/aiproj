@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { createReadStream, existsSync, readdirSync } from "node:fs";
 import path from 'node:path'
-import { Kysely, SqliteDialect } from 'kysely'
+import { Kysely, SqliteDialect, sql } from 'kysely'
 import readline from 'readline/promises'
 import { on } from "node:events";
 import { loadModel, createEmbedding } from 'gpt4all'
@@ -16,7 +16,7 @@ export class IndexBase {
     loaded_database = new Map();    
     dir = path.resolve("indexes");
     /**
-      * @type {import('./embedder.js').Embedder} 
+      * @type {import('gpt4all').EmbeddingModel} 
       */
     _embedder;
     //We only make a one level layer deep database entry listing
@@ -40,14 +40,12 @@ export class IndexBase {
         this._embedder = await loadModel('nomic-embed-text-v1.5.f16.gguf', { type: 'embedding', device: 'gpu'  });
     }
     async createschemas(db, guildId) {
+        this._embedder.
+        sql`create virtual table message using vvs0(
+            content_embeddings(384)
+        );`;
         await db.schema.createTable('message').ifNotExists()
-                .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
-                .addColumn('guild_id', 'text', (col) => col.notNull())
-                .addColumn('author_id', 'text', (col) => col.notNull())
-                .addColumn('content', 'text', (col) => col.notNull())
-                .addColumn('content_embeddings', 'blob', col => col.notNull())
-                .addColumn('timestamp', 'text', (col) => col.notNull())
-                .execute()
+
         const datapath =path.resolve("guilddata", String(guildId)+"_chat_history.txt") 
         if(!existsSync(datapath)) {
             return null;
@@ -59,10 +57,12 @@ export class IndexBase {
         const lines = on(rl, "line");
         for await (const line of lines) {
             const content = line[0];
-            console.log(createEmbedding(this._embedder, content))
+            console.log(createEmbedding(this._embedder, content, { dimensionality: 384 }))
         }
     }
-
+    /**
+      * @returns {Promise<import('kysely').Kysely}
+      */
     async create(guildId) {
         if(this.loaded_database.has(guildId)) {
             return this.loaded_database.get(guildId);
