@@ -1,8 +1,8 @@
 import { commandModule, CommandType, Service } from '@sern/handler'
-import { mkdirSync, writeFileSync } from 'fs'
 import { requirePermission } from '../plugins/requirePermission.js'
 import { PermissionsBitField } from 'discord.js'
-
+import path from 'path'
+import { existsSync } from 'fs'
 
 export default commandModule({
     type: CommandType.Both,
@@ -12,12 +12,18 @@ export default commandModule({
     ],
     execute: async (ctx) => {
         const logger = Service('@sern/logger');
+        const datapath =path.resolve("indexes", String(ctx.guildId)+".db") 
+        if(existsSync(datapath)) {
+            return ctx.reply("You already indexed this server! Go run /search!");
+        }
+        if(ctx.isSlash()) {
+            ctx.interaction.deferReply()
+        }
         const textChannels = await ctx
-            .guild
-            .channels
-            .fetch()
-            .then(chanels => chanels.filter((a) => a.isTextBased()))
-        console.log(textChannels)
+           .guild
+           .channels
+           .fetch()
+           .then(chanels => chanels.filter((a) => a.isTextBased()))
         let allMessages = [];
         //Iterate over all text channels
         for (const channel of textChannels.values()) {
@@ -32,8 +38,10 @@ export default commandModule({
                 do {
                     const messages = await channel?.messages.fetch({ limit: fetchLimiter, before: lastMessageId });
                     messages.forEach(message => {
-                        const formattedMessage = `${message.author.username} (${new Date(message.createdTimeStamp).toLocaleString()}): ${message.content}`
-                        allMessages.push(formattedMessage);
+                        const payload = { guild_id: message.guild.id, author_id: message.author.id, content: message.content };
+                        if(payload.content.length) {
+                            allMessages.push(payload);
+                        }
                     });
                     if(messages.last()) {
                         lastMessageId = messages.last().id;
@@ -43,11 +51,33 @@ export default commandModule({
                     }
                 } while (!done || messageFetched > 3000); //Until it hits 3000
         }
-        const textContent = allMessages.join('\n');
-        const dir = `guilddata/`
-        mkdirSync(dir, { recursive: true });
-        writeFileSync(dir+`${ctx.guild.id}_chat_history.txt`, textContent, { encoding: 'utf8' });
-        logger.info({ message: `Saved to ${ctx.guild.id}_chat_history.txt` });
+        const indexer = Service('index');
+
+        const db = await indexer.create(ctx.guildId);
+        
+        for (const l of allMessages) {
+            const { embeddings } = indexer.embed(l.content)
+            await db.insertInto('messages').values({
+                'guild_id': l.guild_id,
+                'author_id': l.author_id,
+                'content': l.content,
+                'content_embeddings': embeddings,
+                'timestamp': "696969696"
+            }).executeTakeFirstOrThrow();
+
+            
+        }
+        await db.insertInto("message_index")
+                .columns(['rowid', 'content_embeddings'])
+                .expression(({ selectFrom }) => selectFrom("messages")
+                                                .select([ "rowid", "content_embeddings" ]))
+                .execute()
+        logger.info({ message: `Indexed everything for ${ctx.guild.id}.db` });
+        if(ctx.isSlash()) {
+            await ctx.interaction.editReply("This is a new guild, index complete and ready to perform /search!");
+        } else {
+            await ctx.reply("This is a new guild, index complete and ready to perform /search!");
+        }
     }
 })
 
