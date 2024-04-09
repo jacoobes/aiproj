@@ -4,4 +4,4 @@ dist
 users.db
 .sern/
 guilddata/*.txt
-indexes/*.
+indexes/*.db

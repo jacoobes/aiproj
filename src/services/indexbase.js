@@ -29,7 +29,9 @@ export class IndexBase {
             if(existsSync(fullpath)) {
                 continue;
             }
-            const dialect = new SqliteDialect( { database: create_database(fullpath) });
+            const dialect = new SqliteDialect({ 
+                database: create_database(fullpath) 
+            });
             const db = new Kysely({ dialect });
             await this.createschemas(db);
             !ent.isDirectory() && this.loaded_database.set(name, db);
@@ -55,7 +57,7 @@ export class IndexBase {
             crlfDelay: Infinity
         });
         const lines = on(rl, "line");
-        for await (const line of lines){
+        for await (const line of lines) {
             const content = line[0];
             console.log(createEmbedding(this._embedder, content))
         }
