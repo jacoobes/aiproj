@@ -34,12 +34,16 @@ export default commandModule({
                 let lastMessageId = null;
                 let messageFetched = 0;
                 let fetchLimiter = 100;
-                let done  = false 
+                let done  = false
+                const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu
+
                 do {
                     const messages = await channel?.messages.fetch({ limit: fetchLimiter, before: lastMessageId });
+
+
                     messages.forEach(message => {
-                        const payload = { guild_id: message.guild.id, author_id: message.author.id, content: message.content };
-                        if(payload.content.length) {
+                        if(!message.content.match(emojiRegex) && message.content.trim() !== '' && message.author.id !== ctx.client.user.id) {
+                            const payload = { guild_id: message.guild.id, author_id: message.author.id, content: message.content };
                             allMessages.push(payload);
                         }
                     });
@@ -51,6 +55,8 @@ export default commandModule({
                     }
                 } while (!done || messageFetched > 3000); //Until it hits 3000
         }
+
+        console.log(allMessages);
         const indexer = Service('index');
 
         const db = await indexer.create(ctx.guildId);
