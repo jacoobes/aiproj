@@ -21,12 +21,18 @@ export default commandModule({
                     await ai.respond(fullguild.map((v, k) => ({ name: v.name, value: k })));
                 }
             }
+        },
+        {
+            type: ApplicationCommandOptionType.String,
+            name: "query",
+            description: "Enter your search query",
+            required: true
         }
     ],
     execute: async (ctx) => {
         const indexer = Service('index');
         const gid = ctx.options.getString('guild', true);
-        const quy = ctx.options.getString('query', true)
+        const quy = ctx.options.getString('query', true);
         //the kysely instance
         const guildindex  = await indexer.create(gid);
         const payload = { guild_id: ctx.guildId, author_id: ctx.userId, content: quy };
