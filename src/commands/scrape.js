@@ -36,13 +36,14 @@ export default commandModule({
                 let fetchLimiter = 100;
                 let done  = false
                 const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu
+                const customEmoteRegex = /<:[^\s]+:\d+>/g;
+                const emojiRegexExtra = /[\u{1F600}-\u{1F64F}|\u{1F300}-\u{1F5FF}|\u{1F680}-\u{1F6FF}|\u{1F1E0}-\u{1F1FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}|\u{FE00}-\u{FEFF}|\u{1F900}-\u{1F9FF}|\u{1F500}-\u{1F5FF}]/u;
 
                 do {
                     const messages = await channel?.messages.fetch({ limit: fetchLimiter, before: lastMessageId });
 
-
                     messages.forEach(message => {
-                        if(!message.content.match(emojiRegex) && message.content.trim() !== '' && message.author.id !== ctx.client.user.id) {
+                        if(!message.content.match(emojiRegex) && message.content.trim() !== '' && !message.content.match(customEmoteRegex) && !message.content.match(emojiRegexExtra) && message.author.id !== ctx.client.user.id) {
                             const payload = { guild_id: message.guild.id, author_id: message.author.id, content: message.content };
                             allMessages.push(payload);
                         }
